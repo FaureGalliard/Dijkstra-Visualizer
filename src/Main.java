@@ -1,34 +1,20 @@
-/*
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
-*/
+public class Main extends Application {
 
-import java.util.Scanner;
-
-public class Main{
-
-    public static void compara(int a){
-
-        if(a == 0) System.out.println("es igual a 0");
-        else if(a > 0) System.out.println("Es mayor a 0");
-        else System.out.println("es menor a 0");
+    @Override
+    public void start(Stage stage) {
+        Label label = new Label("¡Hola JavaFX!");
+        Scene scene = new Scene(label, 400, 200);
+        stage.setTitle("Mi primera app JavaFX");
+        stage.setScene(scene);
+        stage.show();
     }
 
-    public static void main(String[] args){
-        Scanner sc = new Scanner(System.in);
-        int a = sc.nextInt();
-        compara(a);
-
-
-
-
-
-
-
+    public static void main(String[] args) {
+        launch();
     }
-
-
 }
