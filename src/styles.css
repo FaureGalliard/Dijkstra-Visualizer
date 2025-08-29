@@ -1,0 +1,53 @@
+.button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 10 20 10 20;
+    -fx-background-radius: 8px; /* bordes redondeados */
+}
+
+/* Estilo para labels */
+.label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Estilo general del slider */
+.slider {
+    -fx-control-inner-background: #ecf0f1; /* color de fondo de la barra */
+    -fx-padding: 10;
+}
+
+/* Track (barra) */
+.slider .track {
+    -fx-background-color: #bdc3c7;
+    -fx-background-insets: 0;
+    -fx-background-radius: 5;
+}
+
+/* Thumb (botón deslizante) */
+.slider .thumb {
+    -fx-background-color: #3498db;
+    -fx-background-radius: 50%;
+    -fx-border-color: #2980b9;
+    -fx-border-width: 2px;
+    -fx-pref-width: 20px;
+    -fx-pref-height: 20px;
+}
+
+/* Tick marks (si están visibles) */
+.slider .tick-mark {
+    -fx-stroke: #7f8c8d;
+}
+
+/* Label de los ticks */
+.slider .tick-label {
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 12px;
+}
+
+
+/* Efecto hover para botones */
+.button:hover {
+    -fx-background-color: #2980b9;
+}
