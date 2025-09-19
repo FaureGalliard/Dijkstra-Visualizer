@@ -22,7 +22,7 @@ public class PresentationScene {
         StackPane titleBox = new StackPane(title);
         titleBox.setPadding(new Insets(30, 0, 20, 0));
         root.setTop(titleBox);
-
+//nose
         String[] crewMembers = {
                 "Crispin Valdivia Angel Gabriel",
                 "Chipoco Cordova Sergio Nicolas",
