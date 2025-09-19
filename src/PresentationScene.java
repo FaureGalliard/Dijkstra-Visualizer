@@ -1,29 +1,28 @@
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class PresentationScene {
 
-    private Scene scene;
+    private Scene scene; // variable de instancia correcta
     private final double BASE_WIDTH = 800;
     private final double BASE_HEIGHT = 450;
 
     public PresentationScene(Stage stage) {
 
-        // 1️⃣ Layout principal
         BorderPane root = new BorderPane();
+        root.setPadding(new Insets(20));
 
-        // Título
         Label title = new Label("Dijkstra Visualizer");
+        title.setStyle("-fx-font-size: 32px; -fx-font-weight: bold;");
         StackPane titleBox = new StackPane(title);
-        titleBox.setPadding(new Insets(50, 0, 10, 0));
+        titleBox.setPadding(new Insets(30, 0, 20, 0));
+        root.setTop(titleBox);
 
-        // Grid de miembros
         String[] crewMembers = {
                 "Crispin Valdivia Angel Gabriel",
                 "Chipoco Cordova Sergio Nicolas",
@@ -33,64 +32,41 @@ public class PresentationScene {
         };
 
         GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(20);
+        grid.setHgap(40);
         grid.setVgap(20);
+        grid.setAlignment(Pos.CENTER);
 
         for (int i = 0; i < crewMembers.length; i++) {
             Label nombre = new Label(crewMembers[i]);
-            StackPane tarjeta = new StackPane(nombre);
-            tarjeta.setPrefSize(150, 30);
-
-            int fila = i / 3;
+            int row = i / 3;
             int col = i % 3;
-            grid.add(tarjeta, col, fila);
+            grid.add(nombre, col, row);
         }
 
-        // Botón Next
+        // ==== Botón Next ====
         Button nextBtn = new Button("Comenzar");
+        nextBtn.setPrefWidth(140);
         nextBtn.setOnAction(e -> {
-            SetupScene setupScene = new SetupScene(stage);
-            stage.setScene(setupScene.getScene());
+
+             stage.setScene(new SetupScene(stage).getScene());
         });
 
-        VBox centerBox = new VBox(40, nextBtn, grid);
+        VBox centerBox = new VBox(30, nextBtn, grid);
         centerBox.setAlignment(Pos.CENTER);
-        centerBox.setPadding(new Insets(70, 0, 20, 0));
+        root.setCenter(centerBox);
 
-        // Footer
         Label github = new Label("github.com/FaureGalliard");
         Label teacher = new Label("Profesor: Edgard Kenny Venegas Palacios");
-        BorderPane footer = new BorderPane();
-        footer.setLeft(teacher);
-        footer.setRight(github);
-        BorderPane.setAlignment(teacher, Pos.CENTER_LEFT);
-        BorderPane.setAlignment(github, Pos.CENTER_RIGHT);
-        footer.setPadding(new Insets(10, 10, 10, 10));
 
-        // Set layouts en root
-        root.setTop(titleBox);
-        root.setCenter(centerBox);
+        HBox footer = new HBox();
+        footer.setPadding(new Insets(5));
+        footer.setAlignment(Pos.CENTER);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        footer.getChildren().addAll(teacher, spacer, github);
         root.setBottom(footer);
-
-        // 2️⃣ Group para aplicar escala
-        Group scalableGroup = new Group(root);
-
-        // 3️⃣ Escena base
-        scene = new Scene(scalableGroup, BASE_WIDTH, BASE_HEIGHT);
-
-        // 4️⃣ Escalar todo según ventana
-        scene.widthProperty().addListener((obs, oldVal, newVal) -> {
-            double scale = Math.min(newVal.doubleValue() / BASE_WIDTH, scene.getHeight() / BASE_HEIGHT);
-            scalableGroup.setScaleX(scale);
-            scalableGroup.setScaleY(scale);
-        });
-
-        scene.heightProperty().addListener((obs, oldVal, newVal) -> {
-            double scale = Math.min(scene.getWidth() / BASE_WIDTH, newVal.doubleValue() / BASE_HEIGHT);
-            scalableGroup.setScaleX(scale);
-            scalableGroup.setScaleY(scale);
-        });
+        scene = new Scene(root, 800, 450);
     }
 
     public Scene getScene() {
