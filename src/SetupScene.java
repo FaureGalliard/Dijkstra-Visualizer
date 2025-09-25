@@ -28,7 +28,7 @@ public class SetupScene {
 
         // Crear sliders y campos de texto
         HBox nBox = createSliderBox("Número de nodos (20-100):", 20, 100, 20, value -> n = value);
-        HBox densityBox = createSliderBox("Densidad (0-100%):", 0, 100, 50, value -> density = value);
+        HBox densityBox = createSliderBox("Densidad (1-100%):", 1, 100, 50, value -> density = value);
         HBox weightBox = createSliderBox("Rango de pesos (1-200):", 1, 200, 100, value -> maxWeight = value);
 
         // Botón continuar
@@ -83,12 +83,10 @@ public class SetupScene {
             //por si un gracioso pone algo que no es entero
             try {
                 int value = Integer.parseInt(newVal);
-                if (value >= min && value <= max) {
+
                     slider.setValue(value);
                     updateVar.accept(value);
-                } else {//en vez de crashear ignora el valor y pone el que ya estaba
-                    field.setText(String.valueOf((int) slider.getValue()));
-                }
+
             } catch (NumberFormatException e) {
                 field.setText(String.valueOf((int) slider.getValue()));
             }
