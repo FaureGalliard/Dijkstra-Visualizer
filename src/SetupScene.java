@@ -7,102 +7,98 @@ import javafx.stage.Stage;
 
 public class SetupScene {
     private Scene scene;
-    private int n;                // Número de nodos
-    private String mode;           // "Manual" o "Aleatorio"
-    private double density;        // Grafo aleatorio
-    private int maxWeight;
+    private int n = 20; // Número de nodos
+    private double density = 50; // Densidad del grafo
+    private int maxWeight = 100; // Rango máximo de pesos
 
     public SetupScene(Stage stage) {
-
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(20));
 
+        // Título
         Label title = new Label("Configuración Inicial del Grafo");
         title.setStyle("-fx-font-size: 28px; -fx-font-weight: bold;");
         StackPane titleBox = new StackPane(title);
         titleBox.setPadding(new Insets(20, 0, 30, 0));
         root.setTop(titleBox);
 
+        // Panel central
         VBox centerBox = new VBox(20);
         centerBox.setAlignment(Pos.CENTER);
 
-        HBox nBox = new HBox(10);
-        nBox.setAlignment(Pos.CENTER_LEFT);
-        Label nLabel = new Label("Número de nodos (8-16):");
-        TextField nField = new TextField();
-        nField.setPrefWidth(60);
-        nBox.getChildren().addAll(nLabel, nField);
-
-        // RadioButtons Manual / Aleatorio
-        ToggleGroup modeGroup = new ToggleGroup();
-        RadioButton manualBtn = new RadioButton("Manual");
-        RadioButton randomBtn = new RadioButton("Aleatorio");
-        manualBtn.setToggleGroup(modeGroup);
-        randomBtn.setToggleGroup(modeGroup);
-        manualBtn.setSelected(true);
-
-        HBox modeBox = new HBox(20, manualBtn, randomBtn);
-        modeBox.setAlignment(Pos.CENTER);
-
-        // Opcional: sliders para densidad y rango de pesos
-        Label densityLabel = new Label("Densidad (%):");
-        Slider densitySlider = new Slider(0, 100, 50);
-        densitySlider.setShowTickLabels(true);
-        densitySlider.setShowTickMarks(true);
-        densitySlider.setMajorTickUnit(25);
-        densitySlider.setMinorTickCount(4);
-
-        Label weightLabel = new Label("Rango de pesos (1-10):");
-        Slider weightSlider = new Slider(1, 10, 5);
-        weightSlider.setShowTickLabels(true);
-        weightSlider.setShowTickMarks(true);
-        weightSlider.setMajorTickUnit(1);
-        weightSlider.setMinorTickCount(0);
-
-        VBox randomOptions = new VBox(15, densityLabel, densitySlider, weightLabel, weightSlider);
-        randomOptions.setAlignment(Pos.CENTER);
-        randomOptions.visibleProperty().bind(randomBtn.selectedProperty());
-        randomOptions.managedProperty().bind(randomBtn.selectedProperty());
+        // Crear sliders y campos de texto
+        HBox nBox = createSliderBox("Número de nodos (20-100):", 20, 100, 20, value -> n = value);
+        HBox densityBox = createSliderBox("Densidad (0-100%):", 0, 100, 50, value -> density = value);
+        HBox weightBox = createSliderBox("Rango de pesos (1-200):", 1, 200, 100, value -> maxWeight = value);
 
         // Botón continuar
         Button continueBtn = new Button("Continuar");
         continueBtn.setPrefWidth(140);
         continueBtn.setOnAction(e -> {
-            String nText = nField.getText();
+            if (n < 20 || n > 100 || density < 0 || density > 100 || maxWeight < 1 || maxWeight > 200) {
+                showAlert("Error", "Valores fuera de rango");
+                return;
+            }
+            GraphEditorScene graphScene = new GraphEditorScene(stage, n, "Manual", density, maxWeight);
+            stage.setScene(graphScene.getScene());
+        });
+
+        centerBox.getChildren().addAll(nBox, densityBox, weightBox, continueBtn);
+        root.setCenter(centerBox);
+
+        // Footer
+        Label github = new Label("github.com/FaureGalliard");
+        Label teacher = new Label("Teacher: Edgard Kenny Venegas Palacios");
+        HBox footer = new HBox(10, teacher, new Region(), github);
+        footer.setPadding(new Insets(10));
+        footer.setAlignment(Pos.CENTER);
+        HBox.setHgrow(footer.getChildren().get(1), Priority.ALWAYS);
+        root.setBottom(footer);
+
+        // Escena
+        scene = new Scene(root, 800, 450);
+    }
+
+    private HBox createSliderBox(String labelText, double min, double max, double initial, java.util.function.Consumer<Integer> updateVar) {
+        HBox box = new HBox(10);
+        box.setAlignment(Pos.CENTER); // Centrar los elementos horizontalmente
+
+        Label label = new Label(labelText);
+        Slider slider = new Slider(min, max, initial);
+        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(true);
+        slider.setMajorTickUnit((max - min) / 4);
+        slider.setMinorTickCount(4);
+        slider.setSnapToTicks(false);
+        slider.setPrefWidth(300); // Ancho fijo para sliders
+        TextField field = new TextField(String.valueOf((int) initial));
+        field.setPrefWidth(60);
+
+        slider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            int value = (int) Math.round(newVal.doubleValue());
+            field.setText(String.valueOf(value));
+            updateVar.accept(value);
+        });
+        field.textProperty().addListener((obs, oldVal, newVal) -> {
+            //por si un gracioso pone algo que no es entero
             try {
-                n = Integer.parseInt(nField.getText());
-                if (n < 8 || n > 16) throw new Exception();
-
-                mode = manualBtn.isSelected() ? "Manual" : "Aleatorio";
-                density = densitySlider.getValue();
-                maxWeight = (int) weightSlider.getValue();
-
-                // Pasar al graph editor
-                GraphEditorScene graphScene = new GraphEditorScene(stage, n, mode, density, maxWeight);
-                stage.setScene(graphScene.getScene());
-
-            } catch (Exception a) {
-                showAlert("Error", "Ingrese valores válidos");
+                int value = Integer.parseInt(newVal);
+                if (value >= min && value <= max) {
+                    slider.setValue(value);
+                    updateVar.accept(value);
+                } else {//en vez de crashear ignora el valor y pone el que ya estaba
+                    field.setText(String.valueOf((int) slider.getValue()));
+                }
+            } catch (NumberFormatException e) {
+                field.setText(String.valueOf((int) slider.getValue()));
             }
         });
 
-        centerBox.getChildren().addAll(nBox, modeBox, randomOptions, continueBtn);
-        root.setCenter(centerBox);
-
-        // ==== Footer ====
-        Label github = new Label("github.com/FaureGalliard");
-        Label teacher = new Label("Profesor: Edgard Kenny Venegas Palacios");
-        HBox footer = new HBox();
-        footer.setPadding(new Insets(10));
-        footer.setAlignment(Pos.CENTER);
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        footer.getChildren().addAll(teacher, spacer, github);
-        root.setBottom(footer);
-
-        // ==== Escena ====
-         scene = new Scene(root, 800, 450);
+        box.getChildren().addAll(label, slider, field);
+        return box;
     }
+
+    //verificar si los valores estan dentro de los rangos
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -110,6 +106,7 @@ public class SetupScene {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
     public Scene getScene() {
         return scene;
     }
