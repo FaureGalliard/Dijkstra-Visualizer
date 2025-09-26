@@ -30,10 +30,6 @@ class Nodo extends Circle {
         return nodeId;
     }
 
-    public void setNodeId(int nodeId) {
-        this.nodeId = nodeId;
-    }
-
     public String getName() {
         return name;
     }

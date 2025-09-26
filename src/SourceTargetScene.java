@@ -10,7 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import java.util.*;
+import java.util.ArrayList;
 
 public class SourceTargetScene {
     private final Grafo grafo;
@@ -20,6 +20,9 @@ public class SourceTargetScene {
     private Nodo targetNode;
     private Label resultLabel;
     private final Pane canvasPane;
+    private TextField sourceField;
+    private TextField targetField;
+    private boolean nextIsSource = true;
 
     public SourceTargetScene(Stage stage, Grafo grafo) {
         this.stage = stage;
@@ -47,7 +50,7 @@ public class SourceTargetScene {
         Button backBtn = new Button("Back to Editor");
         backBtn.setPrefWidth(200);
         backBtn.setOnAction(e -> {
-            GraphEditorScene editor = new GraphEditorScene(stage, grafo); // Pass the existing graph
+            GraphEditorScene editor = new GraphEditorScene(stage, grafo);
             stage.setScene(editor.getScene());
         });
 
@@ -70,23 +73,34 @@ public class SourceTargetScene {
         leftPanel.setAlignment(Pos.TOP_CENTER);
 
         // Source and Target input
-        TextField sourceField = createTextField(100);
-        TextField targetField = createTextField(100);
+        sourceField = createTextField(100);
+        sourceField.setPromptText("Source node (e.g., A)");
+        targetField = createTextField(100);
+        targetField.setPromptText("Target node (e.g., B)");
+
+        // Add listeners for text changes
+        addTextChangeListener(sourceField, true);
+        addTextChangeListener(targetField, false);
+
         Button runDijkstraBtn = new Button("Run Dijkstra");
         runDijkstraBtn.setPrefWidth(150);
-        runDijkstraBtn.setOnAction(e -> runDijkstra(sourceField, targetField));
+        // runDijkstraBtn.setOnAction(e -> runDijkstra()); // Disabled as per request
+
+        Button clearBtn = new Button("Clear Selection");
+        clearBtn.setPrefWidth(150);
+        clearBtn.setOnAction(e -> resetAllSelection());
 
         // Result label
         resultLabel = new Label("Select source and target nodes.");
         resultLabel.setWrapText(true);
 
         leftPanel.getChildren().addAll(
-                new Label("Source Node:"),
+                new Label("Source:"),
                 sourceField,
-                new Label("Target Node:"),
+                new Label("Target:"),
                 targetField,
                 runDijkstraBtn,
-                new Label("Result:"),
+                clearBtn,
                 resultLabel
         );
         return leftPanel;
@@ -98,121 +112,120 @@ public class SourceTargetScene {
         return field;
     }
 
+    /** --- Selección centralizada --- */
+    private void selectNode(Nodo node, boolean isSource) {
+        Nodo other = isSource ? targetNode : sourceNode;
+
+        // Evitar que source y target sean el mismo nodo
+        if (node == other) {
+            resultLabel.setText("Cannot select the same node for source and target.");
+            return;
+        }
+
+        // Resetear el anterior
+        if (isSource && sourceNode != null) {
+            sourceNode.setFill(Color.CORNFLOWERBLUE);
+        }
+        if (!isSource && targetNode != null) {
+            targetNode.setFill(Color.CORNFLOWERBLUE);
+        }
+
+        // Guardar y pintar el nuevo
+        if (isSource) {
+            sourceNode = node;
+            sourceField.setText(node.getName());
+            node.setFill(Color.GREEN);
+        } else {
+            targetNode = node;
+            targetField.setText(node.getName());
+            node.setFill(Color.RED);
+        }
+
+        nextIsSource = !isSource;
+        updateResultLabel();
+    }
+
+    /** --- Listeners en los TextFields --- */
+    private void addTextChangeListener(TextField field, boolean isSource) {
+        field.textProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue == null || newValue.trim().isEmpty()) {
+                resetSelection(isSource);
+                updateNextAfterReset();
+                updateResultLabel();
+                return;
+            }
+
+            String nodeName = newValue.trim().toUpperCase();
+            Nodo node = grafo.getNodoPorNombre(nodeName);
+
+            if (node != null) {
+                selectNode(node, isSource); // Usar lógica centralizada
+            } else {
+                resultLabel.setText("Invalid node name: " + nodeName);
+                resetSelection(isSource);
+                updateNextAfterReset();
+            }
+        });
+    }
+
+    /** --- Listener en los nodos (doble click) --- */
     private void enableNodeSelection() {
-        for (Nodo node : grafo.getNodos()) {
+        for (Nodo node : new ArrayList<>(grafo.getNodos())) {
             node.setOnMouseClicked(e -> {
-                if (sourceNode == null) {
-                    sourceNode = node;
-                    node.setFill(Color.GREEN);
-                } else if (targetNode == null && node != sourceNode) {
-                    targetNode = node;
-                    node.setFill(Color.RED);
-                } else {
-                    // Reset selection
-                    resetNodeColors();
-                    sourceNode = node;
-                    node.setFill(Color.GREEN);
-                    targetNode = null;
+                if (e.getClickCount() == 2) {
+                    selectNode(node, nextIsSource);
                 }
             });
         }
     }
 
-    private void resetNodeColors() {
-        for (Nodo node : grafo.getNodos()) {
-            node.setFill(Color.CORNFLOWERBLUE);
-        }
-        for (Arista arista : grafo.getAristas()) {
-            arista.getLine().setStroke(Color.BLACK);
+    /** --- Helpers --- */
+    private void resetSelection(boolean isSource) {
+        if (isSource && sourceNode != null) {
+            sourceNode.setFill(Color.CORNFLOWERBLUE);
+            sourceNode = null;
+            sourceField.clear();
+        } else if (!isSource && targetNode != null) {
+            targetNode.setFill(Color.CORNFLOWERBLUE);
+            targetNode = null;
+            targetField.clear();
         }
     }
 
-    private void runDijkstra(TextField sourceField, TextField targetField) {
-        String sourceName = sourceField.getText().trim().toUpperCase();
-        String targetName = targetField.getText().trim().toUpperCase();
-
-        // If nodes were selected by clicking, use those; otherwise, use text input
-        Nodo start = sourceNode != null ? sourceNode : grafo.getNodoPorNombre(sourceName);
-        Nodo end = targetNode != null ? targetNode : grafo.getNodoPorNombre(targetName);
-
-        if (start == null || end == null) {
-            resultLabel.setText("Error: Invalid source or target node.");
-            return;
+    private void resetAllSelection() {
+        for (Nodo node : new ArrayList<>(grafo.getNodos())) {
+            node.setFill(Color.CORNFLOWERBLUE);
         }
-
-        // Run Dijkstra's algorithm
-        Map<Nodo, Integer> distances = new HashMap<>();
-        Map<Nodo, Nodo> previous = new HashMap<>();
-        PriorityQueue<Nodo> queue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
-        Set<Nodo> visited = new HashSet<>();
-
-        // Initialize distances
-        for (Nodo node : grafo.getNodos()) {
-            distances.put(node, Integer.MAX_VALUE);
-            previous.put(node, null);
+        for (Arista arista : new ArrayList<>(grafo.getAristas())) {
+            arista.getLine().setStroke(Color.BLACK);
         }
-        distances.put(start, 0);
-        queue.offer(start);
+        sourceNode = null;
+        targetNode = null;
+        sourceField.clear();
+        targetField.clear();
+        nextIsSource = true;
+        updateResultLabel();
+    }
 
-        while (!queue.isEmpty()) {
-            Nodo current = queue.poll();
-            if (visited.contains(current)) continue;
-            visited.add(current);
-
-            // Find neighbors
-            for (Arista arista : grafo.getAristas()) {
-                Nodo neighbor = null;
-                if (arista.getNodoU() == current) {
-                    neighbor = arista.getNodoV();
-                } else if (arista.getNodoV() == current) {
-                    neighbor = arista.getNodoU();
-                }
-                if (neighbor != null && !visited.contains(neighbor)) {
-                    int newDist = distances.get(current) + arista.getPeso();
-                    if (newDist < distances.get(neighbor)) {
-                        distances.put(neighbor, newDist);
-                        previous.put(neighbor, current);
-                        queue.offer(neighbor);
-                    }
-                }
-            }
-        }
-
-        // Reconstruct path
-        List<Nodo> path = new ArrayList<>();
-        Nodo current = end;
-        while (current != null) {
-            path.add(current);
-            current = previous.get(current);
-        }
-        Collections.reverse(path);
-
-        // Display result
-        if (distances.get(end) == Integer.MAX_VALUE) {
-            resultLabel.setText("No path exists between " + start.getName() + " and " + end.getName());
+    private void updateNextAfterReset() {
+        if (sourceNode == null) {
+            nextIsSource = true;
+        } else if (targetNode == null) {
+            nextIsSource = false;
         } else {
-            StringBuilder pathStr = new StringBuilder();
-            for (int i = 0; i < path.size(); i++) {
-                pathStr.append(path.get(i).getName());
-                if (i < path.size() - 1) pathStr.append(" -> ");
-            }
-            resultLabel.setText("Shortest path: " + pathStr + "\nTotal cost: " + distances.get(end));
+            nextIsSource = true;
+        }
+    }
 
-            // Highlight path
-            resetNodeColors();
-            for (Nodo node : path) {
-                node.setFill(Color.YELLOW);
-            }
-            for (int i = 0; i < path.size() - 1; i++) {
-                Nodo u = path.get(i);
-                Nodo v = path.get(i + 1);
-                for (Arista arista : grafo.getAristas()) {
-                    if ((arista.getNodoU() == u && arista.getNodoV() == v) ||
-                            (arista.getNodoU() == v && arista.getNodoV() == u)) {
-                        arista.getLine().setStroke(Color.RED);
-                    }
-                }
-            }
+    private void updateResultLabel() {
+        if (sourceNode == null && targetNode == null) {
+            resultLabel.setText("Select source and target nodes.");
+        } else if (sourceNode != null && targetNode == null) {
+            resultLabel.setText("Source: " + sourceNode.getName());
+        } else if (sourceNode == null && targetNode != null) {
+            resultLabel.setText("Target: " + targetNode.getName());
+        } else {
+            resultLabel.setText("Source: " + sourceNode.getName() + ", Target: " + targetNode.getName());
         }
     }
 
