@@ -52,6 +52,21 @@ class Grafo {
         return name.toString();
     }
 
+    public Integer getNodeIdByName(String name) {
+        if (name == null || name.isEmpty()) return null;
+        name = name.toUpperCase();
+        int index = 0;
+        for (int i = name.length() - 1, power = 0; i >= 0; i--, power++) {
+            char c = name.charAt(i);
+            if (c < 'A' || c > 'Z') return null;
+            int value = c - 'A';
+            index += value * Math.pow(26, power);
+            if (i > 0) index += Math.pow(26, power);
+        }
+        if (index >= nodos.size()) return null;
+        return index;
+    }
+
     public void AddNode(Pane canvasPane, double x, double y, int nodeId) {
         Nodo node = new Nodo(nodeDiameter / 2, x, y);
         node.setNodeId(nodeId);
@@ -120,7 +135,11 @@ class Grafo {
     public void DibujarGrafo(Pane canvasPane) {
         // Clear the canvas
         canvasPane.getChildren().clear();
-        // Redraw nodes
+        // Redraw edges first
+        for (Arista arista : aristas) {
+            canvasPane.getChildren().addAll(arista.getLine(), arista.getPesoText());
+        }
+        // Redraw nodes and labels on top
         double canvasWidth = canvasPane.getPrefWidth();
         int nodesPerRow = (int) (canvasWidth / nodeSizeWithSpacing);
         double startX = 10;
@@ -143,10 +162,6 @@ class Grafo {
             node.centerYProperty().addListener((obs, old, newVal) ->
                     label.setY(newVal.doubleValue() + label.getBoundsInLocal().getHeight() / 4));
             canvasPane.getChildren().addAll(node, label);
-        }
-        // Redraw edges
-        for (Arista arista : aristas) {
-            canvasPane.getChildren().addAll(arista.getLine(), arista.getPesoText());
         }
     }
 }

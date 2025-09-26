@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import java.util.Random;
 
 public class GraphEditorScene {
     private final double density;
@@ -72,6 +73,7 @@ public class GraphEditorScene {
         canvasPane.setPrefSize(500, 400);
         grafo.CreateNodes(canvasPane, nodeCount);
         grafo.CreateAristas(canvasPane,density,maxWeight);
+        grafo.DibujarGrafo(canvasPane);
         // Main layout assembly
         HBox mainBox = new HBox(10, leftPanel, canvasPane);
         mainBox.setAlignment(Pos.CENTER);
@@ -97,9 +99,22 @@ public class GraphEditorScene {
             try {
                 String input = nField.getText().trim();
                 int nodesToAdd;
+                Random random = new Random(); // For generating random weights
                 if (input.isEmpty()) {
                     nodesToAdd = 1;
+                    int lastNodeId = grafo.getNodos().size() - 1;
                     grafo.AddNode(canvasPane, 50, 50, grafo.getNodos().size());
+                    // Add edge to the last node if it exists
+                    if (lastNodeId >= 0) {
+                        Nodo lastNode = grafo.getNodoPorId(lastNodeId);
+                        Nodo newNode = grafo.getNodoPorId(lastNodeId + 1);
+                        if (lastNode != null && newNode != null) {
+                            int weight = random.nextInt(maxWeight) + 1;
+                            Arista arista = new Arista(lastNode, newNode, weight);
+                            grafo.agregarArista(arista);
+                            canvasPane.getChildren().addAll(arista.getLine(), arista.getPesoText());
+                        }
+                    }
                 } else {
                     nodesToAdd = Integer.parseInt(input);
                     if (nodesToAdd <= 0) {
@@ -107,7 +122,19 @@ public class GraphEditorScene {
                         return;
                     }
                     for (int i = 0; i < nodesToAdd; i++) {
+                        int lastNodeId = grafo.getNodos().size() - 1;
                         grafo.AddNode(canvasPane, 50, 50, grafo.getNodos().size());
+                        // Add edge to the last node if it exists
+                        if (lastNodeId >= 0) {
+                            Nodo lastNode = grafo.getNodoPorId(lastNodeId);
+                            Nodo newNode = grafo.getNodoPorId(lastNodeId + 1);
+                            if (lastNode != null && newNode != null) {
+                                int weight = random.nextInt(maxWeight) + 1;
+                                Arista arista = new Arista(lastNode, newNode, weight);
+                                grafo.agregarArista(arista);
+                                canvasPane.getChildren().addAll(arista.getLine(), arista.getPesoText());
+                            }
+                        }
                     }
                 }
                 grafo.DibujarGrafo(canvasPane); // Redraw the entire graph
@@ -120,18 +147,27 @@ public class GraphEditorScene {
         // Event handler for addEdgeBtn
         addEdgeBtn.setOnAction(e -> {
             try {
-                int nodeUId = Integer.parseInt(uField.getText());
-                int nodeVId = Integer.parseInt(vField.getText());
-                int weight = Integer.parseInt(wField.getText());
+                String nodeUName = uField.getText().trim().toUpperCase();
+                String nodeVName = vField.getText().trim().toUpperCase();
+                int weight = Integer.parseInt(wField.getText().trim());
                 int currentNodeCount = grafo.getNodos().size();
-                if (nodeUId < 0 || nodeUId >= currentNodeCount || nodeVId < 0 || nodeVId >= currentNodeCount) {
-                    showAlert("Error", "Nodes u and v must be between 0 and " + (currentNodeCount - 1));
+
+                // Validate node names
+                if (nodeUName.isEmpty() || nodeVName.isEmpty()) {
+                    showAlert("Error", "Node names cannot be empty");
+                    return;
+                }
+                Integer nodeUId = grafo.getNodeIdByName(nodeUName);
+                Integer nodeVId = grafo.getNodeIdByName(nodeVName);
+                if (nodeUId == null || nodeVId == null) {
+                    showAlert("Error", "Invalid node name(s): " + nodeUName + " or " + nodeVName);
                     return;
                 }
                 if (nodeUId == nodeVId) {
-                    showAlert("Error", "Nodes u and v cannot be the same");
+                    showAlert("Error", "Node names " + nodeUName + " and " + nodeVName + " cannot be the same");
                     return;
                 }
+                // Validate weight
                 if (weight <= 0 || weight > maxWeight) {
                     showAlert("Error", "Weight must be between 1 and " + maxWeight);
                     return;
@@ -142,16 +178,27 @@ public class GraphEditorScene {
                     showAlert("Error", "One or both nodes do not exist");
                     return;
                 }
+                // Check for duplicate edge
+                for (Arista existingArista : grafo.getAristas()) {
+                    Nodo u = existingArista.getNodoU();
+                    Nodo v = existingArista.getNodoV();
+                    if ((u.getNodeId() == nodeUId && v.getNodeId() == nodeVId) ||
+                            (u.getNodeId() == nodeVId && v.getNodeId() == nodeUId)) {
+                        showAlert("Error", "An edge between nodes " + nodeUName + " and " + nodeVName + " already exists");
+                        return;
+                    }
+                }
+                // Create and add the new edge
                 Arista arista = new Arista(nodoU, nodoV, weight);
                 grafo.agregarArista(arista);
-                // Agregar elementos gráficos al canvas
-                canvasPane.getChildren().add(arista.getLine());
-                canvasPane.getChildren().add(arista.getPesoText());
+                // Add edge graphics to canvas
+                canvasPane.getChildren().addAll(arista.getLine(), arista.getPesoText());
+                // Clear input fields
                 uField.clear();
                 vField.clear();
                 wField.clear();
             } catch (NumberFormatException ex) {
-                showAlert("Error", "Please enter valid numeric values for u, v, and w");
+                showAlert("Error", "Please enter a valid numeric value for weight");
             }
         });
     }

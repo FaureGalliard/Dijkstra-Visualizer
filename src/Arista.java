@@ -1,4 +1,7 @@
 import javafx.scene.shape.Line;
+import javafx.scene.shape.StrokeType;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.paint.Color;
 
@@ -29,6 +32,8 @@ class Arista {
         pesoText = new Text(String.valueOf(peso));
         pesoText.setMouseTransparent(true); // Ignorar eventos del ratón
 
+        pesoText.setStroke(Color.rgb(57, 69, 79));
+        pesoText.setStrokeWidth(2);
         // Vincular posición del texto al medio de la línea
         pesoText.xProperty().bind(nodoU.centerXProperty().add(nodoV.centerXProperty()).divide(2).subtract(pesoText.boundsInLocalProperty().get().getWidth() / 2));
         pesoText.yProperty().bind(nodoU.centerYProperty().add(nodoV.centerYProperty()).divide(2).add(pesoText.boundsInLocalProperty().get().getHeight() / 4));
