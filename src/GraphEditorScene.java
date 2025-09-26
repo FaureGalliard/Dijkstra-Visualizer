@@ -14,6 +14,7 @@ public class GraphEditorScene {
     private final Pane canvasPane;
     private final Stage stage;
 
+    // Existing constructor
     public GraphEditorScene(Stage stage, int nodeCount, String mode, double density, int maxWeight) {
         this.stage = stage;
         this.grafo = new Grafo();
@@ -39,6 +40,39 @@ public class GraphEditorScene {
         // Initialize graph
         grafo.createNodes(canvasPane, nodeCount);
         grafo.createEdges(canvasPane, density, maxWeight);
+        grafo.render(canvasPane);
+
+        // Scene setup
+        this.scene = new Scene(root, 800, 450);
+        stage.setTitle("Graph Editor - Dijkstra Visualizer");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    // New constructor to reuse existing graph
+    public GraphEditorScene(Stage stage, Grafo grafo) {
+        this.stage = stage;
+        this.grafo = grafo;
+        this.density = 50.0; // Default value, adjust if needed
+        this.maxWeight = 10; // Default value, adjust if needed
+        this.canvasPane = createCanvasPane();
+
+        // Main layout
+        BorderPane root = new BorderPane();
+        root.setPadding(new Insets(20));
+
+        // Left panel
+        VBox leftPanel = createLeftPanel();
+
+        // Main layout assembly
+        HBox mainBox = new HBox(10, leftPanel, canvasPane);
+        mainBox.setAlignment(Pos.CENTER);
+        root.setCenter(mainBox);
+
+        // Footer
+        root.setBottom(createFooter());
+
+        // Render existing graph
         grafo.render(canvasPane);
 
         // Scene setup
@@ -86,7 +120,6 @@ public class GraphEditorScene {
         Button continueBtn = new Button("Continue");
         continueBtn.setPrefWidth(200);
         continueBtn.setOnAction(e -> {
-            // Transition to SourceTargetScene
             SourceTargetScene sourceTarget = new SourceTargetScene(stage, grafo);
             stage.setScene(sourceTarget.getScene());
         });
@@ -163,8 +196,8 @@ public class GraphEditorScene {
                 showAlert("Error", "Cannot connect a node to itself");
                 return;
             }
-            if (weight <= 0 || weight > maxWeight) {
-                showAlert("Error", "Weight must be between 1 and " + maxWeight);
+            if (weight <= 0 || weight >  100) {
+                showAlert("Error", "Weight must be between 1 and " + 100);
                 return;
             }
             if (edgeExists(nodoU, nodoV)) {
