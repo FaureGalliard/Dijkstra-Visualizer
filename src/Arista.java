@@ -27,7 +27,6 @@ class Arista {
         line.startYProperty().bind(nodoU.centerYProperty());
         line.endXProperty().bind(nodoV.centerXProperty());
         line.endYProperty().bind(nodoV.centerYProperty());
-
         // Crear el texto del peso
         pesoText = new Text(String.valueOf(peso));
         pesoText.setMouseTransparent(true); // Ignorar eventos del ratón
