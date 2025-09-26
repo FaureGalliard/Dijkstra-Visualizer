@@ -1,29 +1,41 @@
 ### IntelliJ IDEA ###
+.idea/
+*.iml
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+build/
+target/
 
-### Eclipse ###
-.apt_generated
+### Eclipse (por si acaso abres allí) ###
 .classpath
-.factorypath
 .project
-.settings
-.springBeans
-.sts4-cache
+.settings/
 bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
-### NetBeans ###
+### NetBeans (mínimo necesario) ###
 /nbproject/private/
-/nbbuild/
 /dist/
+/nbbuild/
 /nbdist/
-/.nb-gradle/
 
 ### VS Code ###
 .vscode/
 
-### Mac OS ###
+### Java ###
+*.class
+*.log
+
+### JavaFX SDK ###
+javafx-sdk-*/
+
+### Sistema operativo ###
+# macOS
 .DS_Store
+# Windows
+Thumbs.db
+Desktop.ini
+
+### Otros ###
+# Archivos temporales
+*.tmp
+*.swp
+*.bak
