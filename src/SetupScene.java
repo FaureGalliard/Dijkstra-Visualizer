@@ -3,8 +3,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class SetupScene {
@@ -19,19 +17,20 @@ public class SetupScene {
 
     public SetupScene(Stage stage) {
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: #20232a;");
+        root.getStyleClass().add("root");
         root.setPadding(new Insets(PADDING));
 
         root.setTop(createTitlePane());
         root.setCenter(createCenterPane(stage));
         root.setBottom(createFooterPane());
 
-        scene = new Scene(root,  1024, 576);
+        scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
     }
 
     private Pane createTitlePane() {
         Label title = new Label("Configuración Inicial del Grafo");
-        title.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ff914d; -fx-font-family: '" + FONT_NAME + "';");
+        title.getStyleClass().add("title-label");
         StackPane titleBox = new StackPane(title);
         titleBox.setPadding(new Insets(PADDING, 0, PADDING + 10, 0));
         return titleBox;
@@ -39,16 +38,16 @@ public class SetupScene {
 
     private VBox createCenterPane(Stage stage) {
         VBox centerBox = new VBox(SPACING);
+        centerBox.getStyleClass().add("vbox");
         centerBox.setAlignment(Pos.CENTER);
-        centerBox.setStyle("-fx-background-color: #20232a;");
 
         HBox nodeBox = createSliderBox("Número de nodos (20-100):", 20, 100, 20, v -> nodeCount = v);
         HBox densityBox = createSliderBox("Densidad (1-100%):", 1, 100, 50, v -> density = v);
         HBox weightBox = createSliderBox("Rango de pesos (1-200):", 1, 200, 100, v -> maxWeight = v);
 
         Button continueButton = new Button("Continuar");
+        continueButton.getStyleClass().add("button");
         continueButton.setPrefWidth(BUTTON_WIDTH);
-        continueButton.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 14;");
         continueButton.setOnAction(e -> {
             if (nodeCount < 20 || nodeCount > 100 || density < 0 || density > 100 || maxWeight < 1 || maxWeight > 200) {
                 showAlert("Error", "Valores fuera de rango");
@@ -62,41 +61,39 @@ public class SetupScene {
     }
 
     private HBox createFooterPane() {
-        Label teacher = new Label("Teacher: Edgard Kenny Venegas Palacios");
-        teacher.setTextFill(Color.web("#8f8f8f"));
-        teacher.setFont(Font.font(FONT_NAME, 12));
+        Label teacherLabel = new Label("Teacher: Edgard Kenny Venegas Palacios");
+        teacherLabel.getStyleClass().add("secondary-label");
 
-        Label github = new Label("github.com/FaureGalliard");
-        github.setTextFill(Color.web("#8f8f8f"));
-        github.setFont(Font.font(FONT_NAME, 12));
+        Label githubLabel = new Label("github.com/FaureGalliard");
+        githubLabel.getStyleClass().add("secondary-label");
 
-        HBox footer = new HBox(SPACING, teacher, new Region(), github);
+        HBox footer = new HBox(SPACING, teacherLabel, new Region(), githubLabel);
+        footer.getStyleClass().add("hbox");
         footer.setPadding(new Insets(PADDING));
         footer.setAlignment(Pos.CENTER);
-        footer.setStyle("-fx-background-color: #20232a;");
         HBox.setHgrow(footer.getChildren().get(1), Priority.ALWAYS);
         return footer;
     }
 
     private HBox createSliderBox(String labelText, double min, double max, double initial, java.util.function.Consumer<Integer> updateVar) {
         Label label = new Label(labelText);
-        label.setTextFill(Color.web("#ff914d"));
-        label.setFont(Font.font(FONT_NAME, 12));
+        label.getStyleClass().add("normal-label");
 
         HBox box = new HBox(SPACING, label);
+        box.getStyleClass().add("hbox");
         box.setAlignment(Pos.CENTER);
 
         Slider slider = new Slider(min, max, initial);
+        slider.getStyleClass().add("slider");
         slider.setShowTickLabels(true);
         slider.setShowTickMarks(true);
         slider.setMajorTickUnit((max - min) / 4);
         slider.setMinorTickCount(4);
         slider.setPrefWidth(SLIDER_WIDTH);
-        slider.setStyle("-fx-font-family: '" + FONT_NAME + "';");
 
         TextField field = new TextField(String.valueOf((int) initial));
+        field.getStyleClass().add("text-field");
         field.setPrefWidth(TEXT_FIELD_WIDTH);
-        field.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #8f8f8f; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 12;");
 
         slider.valueProperty().addListener((obs, old, newVal) -> {
             int value = (int) Math.round(newVal.doubleValue());
@@ -123,8 +120,7 @@ public class SetupScene {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        alert.getDialogPane().setStyle("-fx-background-color: #20232a; -fx-font-family: '" + FONT_NAME + "';");
-        alert.getDialogPane().lookup(".content.label").setStyle("-fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 12;");
+        alert.getDialogPane().getStyleClass().add("dialog-pane");
         alert.showAndWait();
     }
 

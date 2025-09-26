@@ -10,7 +10,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class SourceTargetScene {
@@ -24,17 +23,16 @@ public class SourceTargetScene {
     private TextField sourceField;
     private TextField targetField;
     private boolean nextIsSource = true;
-    private static final String FONT_NAME = "Courier Prime";
 
     public SourceTargetScene(Stage stage, Grafo grafo) {
         this.stage = stage;
         this.grafo = grafo;
         this.canvasPane = new Pane();
-        canvasPane.setStyle("-fx-background-color: #20232a; -fx-border-color: #2d2d35;");
+        canvasPane.getStyleClass().add("canvas-pane");
         canvasPane.setPrefSize(600, 500);
 
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: #20232a;");
+        root.getStyleClass().add("root");
         root.setPadding(new Insets(20));
 
         grafo.render(canvasPane);
@@ -42,63 +40,62 @@ public class SourceTargetScene {
 
         VBox leftPanel = createLeftPanel();
         Button backBtn = new Button("Back to Editor");
-        backBtn.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 14;");
+        backBtn.getStyleClass().add("button");
         backBtn.setPrefWidth(200);
         backBtn.setOnAction(e -> stage.setScene(new GraphEditorScene(stage, grafo).getScene()));
 
         HBox mainBox = new HBox(10, leftPanel, canvasPane);
+        mainBox.getStyleClass().add("hbox");
         mainBox.setAlignment(Pos.CENTER);
         root.setCenter(mainBox);
         root.setBottom(backBtn);
         BorderPane.setAlignment(backBtn, Pos.CENTER);
         BorderPane.setMargin(backBtn, new Insets(10));
 
-        this.scene = new Scene(root,  1024, 576);
+        this.scene = new Scene(root, 800, 600);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
         stage.setTitle("Source-Target Selector - Dijkstra Visualizer");
     }
 
     private VBox createLeftPanel() {
         VBox leftPanel = new VBox(15);
+        leftPanel.getStyleClass().add("vbox");
         leftPanel.setPrefWidth(200);
         leftPanel.setAlignment(Pos.TOP_CENTER);
-        leftPanel.setStyle("-fx-background-color: #20232a;");
 
         sourceField = new TextField();
+        sourceField.getStyleClass().add("text-field");
         sourceField.setPrefWidth(100);
         sourceField.setPromptText("Source node (e.g., A)");
-        sourceField.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #8f8f8f; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 12;");
 
         targetField = new TextField();
+        targetField.getStyleClass().add("text-field");
         targetField.setPrefWidth(100);
         targetField.setPromptText("Target node (e.g., B)");
-        targetField.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #8f8f8f; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 12;");
 
         addTextChangeListener(sourceField, true);
         addTextChangeListener(targetField, false);
 
         Button runDijkstraBtn = new Button("Run Dijkstra");
+        runDijkstraBtn.getStyleClass().add("button");
         runDijkstraBtn.setPrefWidth(150);
-        runDijkstraBtn.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 14;");
 
         Button clearBtn = new Button("Clear Selection");
+        clearBtn.getStyleClass().add("button");
         clearBtn.setPrefWidth(150);
-        clearBtn.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 14;");
 
         runDijkstraBtn.setOnAction(e -> runDijkstra());
         clearBtn.setOnAction(e -> resetAllSelection());
 
         resultLabel = new Label("Select source and target nodes.");
-        resultLabel.setTextFill(Color.web("#ffffff"));
-        resultLabel.setFont(Font.font(FONT_NAME, 12));
+        resultLabel.getStyleClass().add("normal-label");
         resultLabel.setWrapText(true);
 
         Label sourceLabel = new Label("Source:");
-        sourceLabel.setTextFill(Color.web("#ff914d"));
-        sourceLabel.setFont(Font.font(FONT_NAME, 14));
+        sourceLabel.getStyleClass().add("subtitle-label");
 
         Label targetLabel = new Label("Target:");
-        targetLabel.setTextFill(Color.web("#ff914d"));
-        targetLabel.setFont(Font.font(FONT_NAME, 14));
+        targetLabel.getStyleClass().add("subtitle-label");
 
         leftPanel.getChildren().addAll(sourceLabel, sourceField, targetLabel, targetField, runDijkstraBtn, clearBtn, resultLabel);
         return leftPanel;
@@ -203,7 +200,7 @@ public class SourceTargetScene {
         } else if (sourceNode != null && targetNode == null) {
             resultLabel.setText("Source: " + sourceNode.getName());
         } else if (sourceNode == null && targetNode != null) {
-            resultLabel.setText("Target: " + targetNode.getName());
+            resultLabel.setText("Target: " + sourceNode.getName());
         } else {
             resultLabel.setText("Source: " + sourceNode.getName() + ", Target: " + targetNode.getName());
         }

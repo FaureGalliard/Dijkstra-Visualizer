@@ -16,11 +16,11 @@ public class PresentationScene {
 
     public PresentationScene(Stage stage) {
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: #20232a;");
+        root.getStyleClass().add("root");
         root.setPadding(new Insets(20));
 
         Label title = new Label("Dijkstra Visualizer");
-        title.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #ff914d; -fx-font-family: '" + FONT_NAME + "';");
+        title.getStyleClass().add("title-label");
         StackPane titleBox = new StackPane(title);
         titleBox.setPadding(new Insets(30, 0, 20, 0));
         root.setTop(titleBox);
@@ -40,16 +40,15 @@ public class PresentationScene {
 
         for (int i = 0; i < crewMembers.length; i++) {
             Label nombre = new Label(crewMembers[i]);
-            nombre.setTextFill(Color.web("#ffffff"));
-            nombre.setFont(Font.font(FONT_NAME, 14));
+            nombre.getStyleClass().add("normal-label");
             int row = i / 3;
             int col = i % 3;
             grid.add(nombre, col, row);
         }
 
         Button nextBtn = new Button("Comenzar");
+        nextBtn.getStyleClass().add("button");
         nextBtn.setPrefWidth(140);
-        nextBtn.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 14;");
         nextBtn.setOnAction(e -> stage.setScene(new SetupScene(stage).getScene()));
 
         VBox centerBox = new VBox(30, nextBtn, grid);
@@ -57,23 +56,23 @@ public class PresentationScene {
         root.setCenter(centerBox);
 
         Label github = new Label("github.com/FaureGalliard");
-        github.setTextFill(Color.web("#8f8f8f"));
-        github.setFont(Font.font(FONT_NAME, 12));
+        github.getStyleClass().add("secondary-label");
 
         Label teacher = new Label("Profesor: Edgard Kenny Venegas Palacios");
-        teacher.setTextFill(Color.web("#8f8f8f"));
-        teacher.setFont(Font.font(FONT_NAME, 12));
+        teacher.getStyleClass().add("secondary-label");
 
         HBox footer = new HBox();
+        footer.getStyleClass().add("hbox");
         footer.setPadding(new Insets(5));
         footer.setAlignment(Pos.CENTER);
-        footer.setStyle("-fx-background-color: #20232a;");
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         footer.getChildren().addAll(teacher, spacer, github);
         root.setBottom(footer);
-        scene = new Scene(root, 1024, 576);
+
+        scene = new Scene(root, 800, 450);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
     }
 
     public Scene getScene() {

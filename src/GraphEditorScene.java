@@ -3,19 +3,16 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import java.util.Random;
 
 public class GraphEditorScene {
     private final Grafo grafo;
     private final Scene scene;
-    private  double density;
-    private  int maxWeight;
+    private double density;
+    private int maxWeight;
     private final Pane canvasPane;
     private final Stage stage;
-    private static final String FONT_NAME = "Courier Prime";
 
     public GraphEditorScene(Stage stage, int nodeCount, String mode, double density, int maxWeight) {
         this(stage, new Grafo());
@@ -32,22 +29,24 @@ public class GraphEditorScene {
         this.density = 50.0;
         this.maxWeight = 10;
         this.canvasPane = new Pane();
-        canvasPane.setStyle("-fx-background-color: #20232a; -fx-border-color: #2d2d35;");
+        canvasPane.getStyleClass().add("canvas-pane");
         canvasPane.setPrefSize(500, 400);
 
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: #20232a;");
+        root.getStyleClass().add("root");
         root.setPadding(new Insets(20));
 
         VBox leftPanel = createLeftPanel();
         HBox mainBox = new HBox(10, leftPanel, canvasPane);
+        mainBox.getStyleClass().add("hbox");
         mainBox.setAlignment(Pos.CENTER);
         root.setCenter(mainBox);
         root.setBottom(createFooter());
 
         grafo.render(canvasPane);
 
-        this.scene = new Scene(root,  1024, 576);
+        this.scene = new Scene(root, 800, 450);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
         stage.setTitle("Graph Editor - Dijkstra Visualizer");
         stage.setScene(scene);
         stage.show();
@@ -55,75 +54,71 @@ public class GraphEditorScene {
 
     private VBox createLeftPanel() {
         VBox leftPanel = new VBox(15);
+        leftPanel.getStyleClass().add("vbox");
         leftPanel.setPrefWidth(250);
         leftPanel.setAlignment(Pos.TOP_CENTER);
-        leftPanel.setStyle("-fx-background-color: #20232a;");
 
         TextField uField = new TextField();
+        uField.getStyleClass().add("text-field");
         uField.setPrefWidth(50);
         uField.setPromptText("Node u");
-        uField.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #8f8f8f; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 12;");
 
         TextField vField = new TextField();
+        vField.getStyleClass().add("text-field");
         vField.setPrefWidth(50);
         vField.setPromptText("Node v");
-        vField.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #8f8f8f; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 12;");
 
         TextField wField = new TextField();
+        wField.getStyleClass().add("text-field");
         wField.setPrefWidth(50);
         wField.setPromptText("Weight");
-        wField.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #8f8f8f; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 12;");
 
         Button addEdgeBtn = new Button("Add Edge");
+        addEdgeBtn.getStyleClass().add("button");
         addEdgeBtn.setPrefWidth(100);
-        addEdgeBtn.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 14;");
         addEdgeBtn.setOnAction(e -> handleAddEdge(uField, vField, wField));
 
         Label edgeLabel = new Label("Add Edge");
-        edgeLabel.setTextFill(Color.web("#ff914d"));
-        edgeLabel.setFont(Font.font(FONT_NAME, 14));
+        edgeLabel.getStyleClass().add("subtitle-label");
 
         Label nodeULabel = new Label("Node u:");
-        nodeULabel.setTextFill(Color.web("#ff914d"));
-        nodeULabel.setFont(Font.font(FONT_NAME, 12));
+        nodeULabel.getStyleClass().add("normal-label");
 
         Label nodeVLabel = new Label("Node v:");
-        nodeVLabel.setTextFill(Color.web("#ff914d"));
-        nodeVLabel.setFont(Font.font(FONT_NAME, 12));
+        nodeVLabel.getStyleClass().add("normal-label");
 
         Label weightLabel = new Label("Weight w:");
-        weightLabel.setTextFill(Color.web("#ff914d"));
-        weightLabel.setFont(Font.font(FONT_NAME, 12));
+        weightLabel.getStyleClass().add("normal-label");
 
         VBox edgeBox = new VBox(5, new HBox(5, nodeULabel, uField),
                 new HBox(5, nodeVLabel, vField),
                 new HBox(5, weightLabel, wField), addEdgeBtn);
+        edgeBox.getStyleClass().add("vbox");
         edgeBox.setAlignment(Pos.CENTER);
 
         TextField nField = new TextField();
+        nField.getStyleClass().add("text-field");
         nField.setPrefWidth(50);
         nField.setPromptText("Number of nodes");
-        nField.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #8f8f8f; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 12;");
 
         Button addNodeBtn = new Button("Add Node(s)");
+        addNodeBtn.getStyleClass().add("button");
         addNodeBtn.setPrefWidth(100);
-        addNodeBtn.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 14;");
         addNodeBtn.setOnAction(e -> handleAddNodes(nField));
 
         Label nodeLabel = new Label("Add Node");
-        nodeLabel.setTextFill(Color.web("#ff914d"));
-        nodeLabel.setFont(Font.font(FONT_NAME, 14));
+        nodeLabel.getStyleClass().add("subtitle-label");
 
         Label numNodesLabel = new Label("Number of nodes:");
-        numNodesLabel.setTextFill(Color.web("#ff914d"));
-        numNodesLabel.setFont(Font.font(FONT_NAME, 12));
+        numNodesLabel.getStyleClass().add("normal-label");
 
         VBox nodeBox = new VBox(5, new HBox(5, numNodesLabel, nField), addNodeBtn);
+        nodeBox.getStyleClass().add("vbox");
         nodeBox.setAlignment(Pos.CENTER);
 
         Button continueBtn = new Button("Continue");
+        continueBtn.getStyleClass().add("button");
         continueBtn.setPrefWidth(200);
-        continueBtn.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 14;");
         continueBtn.setOnAction(e -> stage.setScene(new SourceTargetScene(stage, grafo).getScene()));
 
         leftPanel.getChildren().addAll(new VBox(10, edgeLabel, edgeBox, new Separator(), nodeLabel, nodeBox), continueBtn);
@@ -132,17 +127,15 @@ public class GraphEditorScene {
 
     private HBox createFooter() {
         Label github = new Label("github.com/FaureGalliard");
-        github.setTextFill(Color.web("#8f8f8f"));
-        github.setFont(Font.font(FONT_NAME, 12));
+        github.getStyleClass().add("secondary-label");
 
-        Label teacher = new Label("Teacher: Edgard Kenny Venegas Palacios");
-        teacher.setTextFill(Color.web("#8f8f8f"));
-        teacher.setFont(Font.font(FONT_NAME, 12));
+        Label teacher = new Label("Teacher: Edgard Kenny Venegas Maldanado");
+        teacher.getStyleClass().add("secondary-label");
 
         HBox footer = new HBox(10, teacher, new Region(), github);
+        footer.getStyleClass().add("hbox");
         footer.setPadding(new Insets(10));
         footer.setAlignment(Pos.CENTER);
-        footer.setStyle("-fx-background-color: #20232a;");
         HBox.setHgrow(footer.getChildren().get(1), Priority.ALWAYS);
         return footer;
     }
@@ -222,8 +215,7 @@ public class GraphEditorScene {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        alert.getDialogPane().setStyle("-fx-background-color: #20232a; -fx-font-family: '" + FONT_NAME + "';");
-        alert.getDialogPane().lookup(".content.label").setStyle("-fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 12;");
+        alert.getDialogPane().getStyleClass().add("dialog-pane");
         alert.showAndWait();
     }
 

@@ -1,0 +1,81 @@
+/* General Styles */
+.root {
+    -fx-background-color: #20232a;
+    -fx-font-family: 'Courier Prime';
+}
+
+/* Canvas */
+.canvas-pane {
+    -fx-background-color: #20232a;
+    -fx-border-color: #2d2d35;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #2d2d35;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: 'Courier Prime';
+    -fx-font-size: 14px;
+}
+
+/* Text Fields */
+.text-field {
+    -fx-background-color: #2d2d35;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #8f8f8f;
+    -fx-font-family: 'Courier Prime';
+    -fx-font-size: 12px;
+}
+
+/* Sliders */
+.slider {
+    -fx-background-color: #2d2d35;
+    -fx-accent: #8c52ff;
+}
+
+/* Labels */
+.title-label {
+    -fx-text-fill: #ff914d;
+    -fx-font-family: 'Courier Prime';
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.subtitle-label {
+    -fx-text-fill: #ff914d;
+    -fx-font-family: 'Courier Prime';
+    -fx-font-size: 14px;
+}
+
+.normal-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-family: 'Courier Prime';
+    -fx-font-size: 12px;
+}
+
+.secondary-label {
+    -fx-text-fill: #8f8f8f;
+    -fx-font-family: 'Courier Prime';
+    -fx-font-size: 12px;
+}
+
+/* Alerts */
+.dialog-pane {
+    -fx-background-color: #20232a;
+    -fx-font-family: 'Courier Prime';
+}
+
+.dialog-pane .content.label {
+    -fx-text-fill: #ffffff;
+    -fx-font-family: 'Courier Prime';
+    -fx-font-size: 12px;
+}
+
+/* Containers */
+.vbox {
+    -fx-background-color: #20232a;
+}
+
+.hbox {
+    -fx-background-color: #20232a;
+}
