@@ -6,17 +6,21 @@ class Nodo extends Circle {
     private double offsetX;
     private double offsetY;
     private int nodeId;
-    private String name; // Added to store node name
+    private String name;
 
     public Nodo(double radius, double centerX, double centerY, int nodeId, String name) {
         super(centerX, centerY, radius, Color.CORNFLOWERBLUE);
         this.nodeId = nodeId;
         this.name = name.toUpperCase();
-        setOnMousePressed((MouseEvent e) -> {
+        enableDragging();
+    }
+
+    private void enableDragging() {
+        setOnMousePressed(e -> {
             offsetX = e.getSceneX() - getCenterX();
             offsetY = e.getSceneY() - getCenterY();
         });
-        setOnMouseDragged((MouseEvent e) -> {
+        setOnMouseDragged(e -> {
             setCenterX(e.getSceneX() - offsetX);
             setCenterY(e.getSceneY() - offsetY);
         });
@@ -26,6 +30,9 @@ class Nodo extends Circle {
         return nodeId;
     }
 
+    public void setNodeId(int nodeId) {
+        this.nodeId = nodeId;
+    }
 
     public String getName() {
         return name;
