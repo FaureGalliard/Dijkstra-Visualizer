@@ -10,8 +10,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import java.util.ArrayList;
 
 public class SourceTargetScene {
     private final Grafo grafo;
@@ -24,38 +24,28 @@ public class SourceTargetScene {
     private TextField sourceField;
     private TextField targetField;
     private boolean nextIsSource = true;
+    private static final String FONT_NAME = "Courier Prime";
 
     public SourceTargetScene(Stage stage, Grafo grafo) {
         this.stage = stage;
         this.grafo = grafo;
-
-        // Main layout
-        BorderPane root = new BorderPane();
-        root.setPadding(new Insets(20));
-
-        // Canvas for rendering the graph
-        canvasPane = new Pane();
-        canvasPane.setStyle("-fx-background-color: #f0f0f0; -fx-border-color: black;");
+        this.canvasPane = new Pane();
+        canvasPane.setStyle("-fx-background-color: #20232a; -fx-border-color: #2d2d35;");
         canvasPane.setPrefSize(600, 500);
 
-        // Render the graph
-        grafo.render(canvasPane);
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: #20232a;");
+        root.setPadding(new Insets(20));
 
-        // Enable node selection
+        grafo.render(canvasPane);
         enableNodeSelection();
 
-        // Left panel for input and results
         VBox leftPanel = createLeftPanel();
-
-        // Back button
         Button backBtn = new Button("Back to Editor");
+        backBtn.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 14;");
         backBtn.setPrefWidth(200);
-        backBtn.setOnAction(e -> {
-            GraphEditorScene editor = new GraphEditorScene(stage, grafo);
-            stage.setScene(editor.getScene());
-        });
+        backBtn.setOnAction(e -> stage.setScene(new GraphEditorScene(stage, grafo).getScene()));
 
-        // Layout assembly
         HBox mainBox = new HBox(10, leftPanel, canvasPane);
         mainBox.setAlignment(Pos.CENTER);
         root.setCenter(mainBox);
@@ -63,8 +53,7 @@ public class SourceTargetScene {
         BorderPane.setAlignment(backBtn, Pos.CENTER);
         BorderPane.setMargin(backBtn, new Insets(10));
 
-        // Scene setup
-        this.scene = new Scene(root, 800, 600);
+        this.scene = new Scene(root,  1024, 576);
         stage.setTitle("Source-Target Selector - Dijkstra Visualizer");
     }
 
@@ -72,81 +61,77 @@ public class SourceTargetScene {
         VBox leftPanel = new VBox(15);
         leftPanel.setPrefWidth(200);
         leftPanel.setAlignment(Pos.TOP_CENTER);
+        leftPanel.setStyle("-fx-background-color: #20232a;");
 
-        // Source and Target input
-        sourceField = createTextField(100);
+        sourceField = new TextField();
+        sourceField.setPrefWidth(100);
         sourceField.setPromptText("Source node (e.g., A)");
-        targetField = createTextField(100);
-        targetField.setPromptText("Target node (e.g., B)");
+        sourceField.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #8f8f8f; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 12;");
 
-        // Add listeners for text changes
+        targetField = new TextField();
+        targetField.setPrefWidth(100);
+        targetField.setPromptText("Target node (e.g., B)");
+        targetField.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #8f8f8f; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 12;");
+
         addTextChangeListener(sourceField, true);
         addTextChangeListener(targetField, false);
 
         Button runDijkstraBtn = new Button("Run Dijkstra");
         runDijkstraBtn.setPrefWidth(150);
-        runDijkstraBtn.setOnAction(e -> runDijkstra());
+        runDijkstraBtn.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 14;");
 
         Button clearBtn = new Button("Clear Selection");
         clearBtn.setPrefWidth(150);
+        clearBtn.setStyle("-fx-background-color: #2d2d35; -fx-text-fill: #ffffff; -fx-font-family: '" + FONT_NAME + "'; -fx-font-size: 14;");
+
+        runDijkstraBtn.setOnAction(e -> runDijkstra());
         clearBtn.setOnAction(e -> resetAllSelection());
 
-        // Result label
         resultLabel = new Label("Select source and target nodes.");
+        resultLabel.setTextFill(Color.web("#ffffff"));
+        resultLabel.setFont(Font.font(FONT_NAME, 12));
         resultLabel.setWrapText(true);
 
-        leftPanel.getChildren().addAll(
-                new Label("Source:"),
-                sourceField,
-                new Label("Target:"),
-                targetField,
-                runDijkstraBtn,
-                clearBtn,
-                resultLabel
-        );
+        Label sourceLabel = new Label("Source:");
+        sourceLabel.setTextFill(Color.web("#ff914d"));
+        sourceLabel.setFont(Font.font(FONT_NAME, 14));
+
+        Label targetLabel = new Label("Target:");
+        targetLabel.setTextFill(Color.web("#ff914d"));
+        targetLabel.setFont(Font.font(FONT_NAME, 14));
+
+        leftPanel.getChildren().addAll(sourceLabel, sourceField, targetLabel, targetField, runDijkstraBtn, clearBtn, resultLabel);
         return leftPanel;
     }
 
-    private TextField createTextField(double width) {
-        TextField field = new TextField();
-        field.setPrefWidth(width);
-        return field;
-    }
-
-    /** --- Selección centralizada --- */
     private void selectNode(Nodo node, boolean isSource) {
         Nodo other = isSource ? targetNode : sourceNode;
-
-        // Evitar que source y target sean el mismo nodo
         if (node == other) {
             resultLabel.setText("Cannot select the same node for source and target.");
             return;
         }
 
-        // Resetear el anterior
         if (isSource && sourceNode != null) {
-            sourceNode.setFill(Color.CORNFLOWERBLUE);
+            sourceNode.setFill(Color.web("#8f8f8f"));
         }
         if (!isSource && targetNode != null) {
-            targetNode.setFill(Color.CORNFLOWERBLUE);
+            targetNode.setFill(Color.web("#8f8f8f"));
         }
 
-        // Guardar y pintar el nuevo
         if (isSource) {
             sourceNode = node;
             sourceField.setText(node.getName());
-            node.setFill(Color.GREEN);
+            node.setFill(Color.web("#8c52ff"));
         } else {
             targetNode = node;
             targetField.setText(node.getName());
-            node.setFill(Color.RED);
+            node.setFill(Color.web("#cb6ce6"));
         }
 
         nextIsSource = !isSource;
         updateResultLabel();
     }
 
-    /** --- Listeners en los TextFields --- */
     private void addTextChangeListener(TextField field, boolean isSource) {
         field.textProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue == null || newValue.trim().isEmpty()) {
@@ -156,55 +141,46 @@ public class SourceTargetScene {
                 return;
             }
 
-            String nodeName = newValue.trim().toUpperCase();
-            Nodo node = grafo.getNodoPorNombre(nodeName);
-
+            Nodo node = grafo.getNodoPorNombre(newValue.trim().toUpperCase());
             if (node != null) {
-                selectNode(node, isSource); // Usar lógica centralizada
+                selectNode(node, isSource);
             } else {
-                resultLabel.setText("Invalid node name: " + nodeName);
+                resultLabel.setText("Invalid node name: " + newValue.trim().toUpperCase());
                 resetSelection(isSource);
                 updateNextAfterReset();
             }
         });
     }
 
-    /** --- Listener en los nodos (doble click) --- */
     private void enableNodeSelection() {
-        for (Nodo node : new ArrayList<>(grafo.getNodos())) {
-            node.setOnMouseClicked(e -> {
-                if (e.getClickCount() == 2) {
-                    selectNode(node, nextIsSource);
-                }
-            });
-        }
+        grafo.getNodos().forEach(node -> node.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                selectNode(node, nextIsSource);
+            }
+        }));
     }
 
-    /** --- Helpers --- */
     private void resetSelection(boolean isSource) {
         if (isSource && sourceNode != null) {
-            sourceNode.setFill(Color.CORNFLOWERBLUE);
+            sourceNode.setFill(Color.web("#8f8f8f"));
             sourceNode = null;
             sourceField.clear();
         } else if (!isSource && targetNode != null) {
-            targetNode.setFill(Color.CORNFLOWERBLUE);
+            targetNode.setFill(Color.web("#8f8f8f"));
             targetNode = null;
             targetField.clear();
         }
     }
 
     private void resetHighlights() {
-        for (Nodo node : new ArrayList<>(grafo.getNodos())) {
-            node.setFill(Color.CORNFLOWERBLUE);
-        }
-        for (Arista arista : new ArrayList<>(grafo.getAristas())) {
-            arista.getLine().setStroke(Color.BLACK);
+        grafo.getNodos().forEach(node -> node.setFill(Color.web("#8f8f8f")));
+        grafo.getAristas().forEach(arista -> {
+            arista.getLine().setStroke(Color.web("#f5f5f5"));
             arista.getLine().setStrokeWidth(2);
-            // Restaurar color de las líneas de la flecha
             arista.getEdgeGroup().getChildren().stream()
-                    .filter(node -> node instanceof Line)
-                    .forEach(node -> ((Line) node).setStroke(Color.BLACK));
-        }
+                    .filter(n -> n instanceof Line)
+                    .forEach(n -> ((Line) n).setStroke(Color.web("#f5f5f5")));
+        });
     }
 
     private void resetAllSelection() {
@@ -218,13 +194,7 @@ public class SourceTargetScene {
     }
 
     private void updateNextAfterReset() {
-        if (sourceNode == null) {
-            nextIsSource = true;
-        } else if (targetNode == null) {
-            nextIsSource = false;
-        } else {
-            nextIsSource = true;
-        }
+        nextIsSource = sourceNode == null || targetNode != null;
     }
 
     private void updateResultLabel() {
@@ -251,45 +221,31 @@ public class SourceTargetScene {
             return;
         }
 
-        // Reset highlights before applying new ones
         resetHighlights();
-
-        // Highlight nodes in the path
         for (Nodo n : result.path) {
-            if (n == sourceNode) {
-                n.setFill(Color.GREEN);
-            } else if (n == targetNode) {
-                n.setFill(Color.RED);
-            } else {
-                n.setFill(Color.YELLOW);
-            }
+            n.setFill(n == sourceNode ? Color.web("#8c52ff") : n == targetNode ? Color.web("#cb6ce6") : Color.web("#fd9e80"));
         }
 
-        // Highlight edges in the path
         for (int i = 0; i < result.path.size() - 1; i++) {
             Nodo u = result.path.get(i);
             Nodo v = result.path.get(i + 1);
             Arista e = grafo.getEdgeBetween(u, v);
             if (e != null) {
-                e.getLine().setStroke(Color.YELLOW);
+                e.getLine().setStroke(Color.web("#ff914d"));
                 e.getLine().setStrokeWidth(4);
-                // Resaltar las líneas de la flecha
                 e.getEdgeGroup().getChildren().stream()
-                        .filter(node -> node instanceof Line)
-                        .forEach(node -> {
-                            ((Line) node).setStroke(Color.YELLOW);
-                            ((Line) node).setStrokeWidth(4);
+                        .filter(n -> n instanceof Line)
+                        .forEach(n -> {
+                            ((Line) n).setStroke(Color.web("#ff914d"));
+                            ((Line) n).setStrokeWidth(4);
                         });
             }
         }
 
-        // Update result label with path and distance
         StringBuilder sb = new StringBuilder("Shortest Path: ");
-        for (Nodo n : result.path) {
-            sb.append(n.getName()).append(" -> ");
-        }
+        result.path.forEach(n -> sb.append(n.getName()).append(" -> "));
         if (sb.length() > 0) {
-            sb.setLength(sb.length() - 4); // Remove last " -> "
+            sb.setLength(sb.length() - 4);
         }
         sb.append("\nDistance: ").append(result.distance);
         resultLabel.setText(sb.toString());
