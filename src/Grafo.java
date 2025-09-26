@@ -8,9 +8,9 @@ import javafx.scene.text.TextAlignment;
 class Grafo {
     private List<Nodo> nodos;
     private List<Arista> aristas;
-    double nodeDiameter = 20;
-    double spacing = 30;
-    double nodeSizeWithSpacing = nodeDiameter + spacing;
+    private double nodeDiameter = 20;
+    private double spacing = 30;
+    private double nodeSizeWithSpacing = nodeDiameter + spacing;
 
     public Grafo() {
         nodos = new ArrayList<>();
@@ -42,7 +42,18 @@ class Grafo {
         return null;
     }
 
-    public String getNodeName(int index) {
+    public Nodo getNodoPorNombre(String name) {
+        if (name == null || name.isEmpty()) return null;
+        name = name.toUpperCase();
+        for (Nodo nodo : nodos) {
+            if (nodo.getName().equals(name)) {
+                return nodo;
+            }
+        }
+        return null;
+    }
+
+    public String generateNodeName(int index) {
         StringBuilder name = new StringBuilder();
         while (index >= 0) {
             name.insert(0, (char) ('A' + (index % 26)));
@@ -52,26 +63,11 @@ class Grafo {
         return name.toString();
     }
 
-    public Integer getNodeIdByName(String name) {
-        if (name == null || name.isEmpty()) return null;
-        name = name.toUpperCase();
-        int index = 0;
-        for (int i = name.length() - 1, power = 0; i >= 0; i--, power++) {
-            char c = name.charAt(i);
-            if (c < 'A' || c > 'Z') return null;
-            int value = c - 'A';
-            index += value * Math.pow(26, power);
-            if (i > 0) index += Math.pow(26, power);
-        }
-        if (index >= nodos.size()) return null;
-        return index;
-    }
-
     public void AddNode(Pane canvasPane, double x, double y, int nodeId) {
-        Nodo node = new Nodo(nodeDiameter / 2, x, y);
-        node.setNodeId(nodeId);
+        String nodeName = generateNodeName(nodeId);
+        Nodo node = new Nodo(nodeDiameter / 2, x, y, nodeId, nodeName);
         agregarNodo(node);
-        Text label = new Text(getNodeName(nodeId));
+        Text label = new Text(nodeName);
         label.setTextAlignment(TextAlignment.CENTER);
         label.setMouseTransparent(true);
         label.setX(x - label.getBoundsInLocal().getWidth() / 2);
@@ -104,7 +100,7 @@ class Grafo {
 
         double prob = density / 100.0;
 
-        // Conectar nodos en una cadena
+        // Connect nodes in a chain
         for (int i = 0; i < nodos.size() - 1; i++) {
             Nodo nodoU = nodos.get(i);
             Nodo nodoV = nodos.get(i + 1);
@@ -113,7 +109,7 @@ class Grafo {
             agregarArista(arista);
         }
 
-        // Agregar aristas adicionales según densidad
+        // Add additional edges based on density
         for (int i = 0; i < nodos.size(); i++) {
             for (int j = i + 1; j < nodos.size(); j++) {
                 if (j == i + 1) continue;
@@ -149,7 +145,7 @@ class Grafo {
             Nodo node = nodos.get(i);
             node.setCenterX(x);
             node.setCenterY(y);
-            Text label = new Text(getNodeName(i));
+            Text label = new Text(node.getName());
             label.setTextAlignment(TextAlignment.CENTER);
             label.setMouseTransparent(true);
             label.setX(x - label.getBoundsInLocal().getWidth() / 2);
