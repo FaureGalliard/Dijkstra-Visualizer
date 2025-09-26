@@ -1,5 +1,9 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Random;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -97,7 +101,7 @@ class Grafo {
         canvasPane.getChildren().clear();
         // Draw edges first
         for (Arista arista : aristas) {
-            canvasPane.getChildren().addAll(arista.getLine(), arista.getPesoText());
+            canvasPane.getChildren().addAll(arista.getEdgeGroup(), arista.getPesoText());
         }
         // Draw nodes and labels on top
         for (Nodo node : nodos) {
@@ -111,6 +115,80 @@ class Grafo {
             node.centerYProperty().addListener((obs, old, newVal) ->
                     label.setY(newVal.doubleValue() + label.getBoundsInLocal().getHeight() / 4));
             canvasPane.getChildren().addAll(node, label);
+        }
+    }
+
+    public List<Arista> getAdjacentEdges(Nodo node) {
+        List<Arista> adj = new ArrayList<>();
+        for (Arista e : aristas) {
+            if (e.getNodoU() == node || e.getNodoV() == node) {
+                adj.add(e);
+            }
+        }
+        return adj;
+    }
+
+    public Arista getEdgeBetween(Nodo u, Nodo v) {
+        for (Arista e : aristas) {
+            if ((e.getNodoU() == u && e.getNodoV() == v) || (e.getNodoU() == v && e.getNodoV() == u)) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    public PathResult getShortestPath(Nodo source, Nodo target) {
+        Map<Nodo, Integer> distances = new HashMap<>();
+        Map<Nodo, Nodo> previous = new HashMap<>();
+        PriorityQueue<Nodo> pq = new PriorityQueue<>((a, b) -> Integer.compare(
+                distances.getOrDefault(a, Integer.MAX_VALUE),
+                distances.getOrDefault(b, Integer.MAX_VALUE)
+        ));
+
+        for (Nodo n : nodos) {
+            distances.put(n, Integer.MAX_VALUE);
+        }
+        distances.put(source, 0);
+        pq.add(source);
+
+        while (!pq.isEmpty()) {
+            Nodo current = pq.poll();
+            if (current == target) break;
+
+            for (Arista e : getAdjacentEdges(current)) {
+                Nodo neighbor = (e.getNodoU() == current) ? e.getNodoV() : e.getNodoU();
+                int alt = distances.get(current) + e.getPeso();
+                if (alt < distances.getOrDefault(neighbor, Integer.MAX_VALUE)) {
+                    distances.put(neighbor, alt);
+                    previous.put(neighbor, current);
+                    pq.add(neighbor);
+                }
+            }
+        }
+
+        if (distances.get(target) == Integer.MAX_VALUE) {
+            return null;
+        }
+
+        // Build path
+        List<Nodo> path = new ArrayList<>();
+        Nodo curr = target;
+        while (curr != null) {
+            path.add(curr);
+            curr = previous.get(curr);
+        }
+        Collections.reverse(path);
+
+        return new PathResult(path, distances.get(target));
+    }
+
+    public static class PathResult {
+        public List<Nodo> path;
+        public int distance;
+
+        public PathResult(List<Nodo> path, int distance) {
+            this.path = path;
+            this.distance = distance;
         }
     }
 }

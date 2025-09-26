@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 
@@ -84,7 +85,7 @@ public class SourceTargetScene {
 
         Button runDijkstraBtn = new Button("Run Dijkstra");
         runDijkstraBtn.setPrefWidth(150);
-        // runDijkstraBtn.setOnAction(e -> runDijkstra()); // Disabled as per request
+        runDijkstraBtn.setOnAction(e -> runDijkstra());
 
         Button clearBtn = new Button("Clear Selection");
         clearBtn.setPrefWidth(150);
@@ -192,13 +193,22 @@ public class SourceTargetScene {
         }
     }
 
-    private void resetAllSelection() {
+    private void resetHighlights() {
         for (Nodo node : new ArrayList<>(grafo.getNodos())) {
             node.setFill(Color.CORNFLOWERBLUE);
         }
         for (Arista arista : new ArrayList<>(grafo.getAristas())) {
             arista.getLine().setStroke(Color.BLACK);
+            arista.getLine().setStrokeWidth(2);
+            // Restaurar color de las líneas de la flecha
+            arista.getEdgeGroup().getChildren().stream()
+                    .filter(node -> node instanceof Line)
+                    .forEach(node -> ((Line) node).setStroke(Color.BLACK));
         }
+    }
+
+    private void resetAllSelection() {
+        resetHighlights();
         sourceNode = null;
         targetNode = null;
         sourceField.clear();
@@ -227,6 +237,62 @@ public class SourceTargetScene {
         } else {
             resultLabel.setText("Source: " + sourceNode.getName() + ", Target: " + targetNode.getName());
         }
+    }
+
+    private void runDijkstra() {
+        if (sourceNode == null || targetNode == null) {
+            resultLabel.setText("Please select source and target nodes.");
+            return;
+        }
+
+        Grafo.PathResult result = grafo.getShortestPath(sourceNode, targetNode);
+        if (result == null) {
+            resultLabel.setText("No path found from source to target.");
+            return;
+        }
+
+        // Reset highlights before applying new ones
+        resetHighlights();
+
+        // Highlight nodes in the path
+        for (Nodo n : result.path) {
+            if (n == sourceNode) {
+                n.setFill(Color.GREEN);
+            } else if (n == targetNode) {
+                n.setFill(Color.RED);
+            } else {
+                n.setFill(Color.YELLOW);
+            }
+        }
+
+        // Highlight edges in the path
+        for (int i = 0; i < result.path.size() - 1; i++) {
+            Nodo u = result.path.get(i);
+            Nodo v = result.path.get(i + 1);
+            Arista e = grafo.getEdgeBetween(u, v);
+            if (e != null) {
+                e.getLine().setStroke(Color.YELLOW);
+                e.getLine().setStrokeWidth(4);
+                // Resaltar las líneas de la flecha
+                e.getEdgeGroup().getChildren().stream()
+                        .filter(node -> node instanceof Line)
+                        .forEach(node -> {
+                            ((Line) node).setStroke(Color.YELLOW);
+                            ((Line) node).setStrokeWidth(4);
+                        });
+            }
+        }
+
+        // Update result label with path and distance
+        StringBuilder sb = new StringBuilder("Shortest Path: ");
+        for (Nodo n : result.path) {
+            sb.append(n.getName()).append(" -> ");
+        }
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 4); // Remove last " -> "
+        }
+        sb.append("\nDistance: ").append(result.distance);
+        resultLabel.setText(sb.toString());
     }
 
     public Scene getScene() {
