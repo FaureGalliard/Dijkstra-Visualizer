@@ -1,41 +1,28 @@
-### IntelliJ IDEA ###
-.idea/
-*.iml
-out/
-build/
-target/
-
-### Eclipse (por si acaso abres allí) ###
-.classpath
-.project
-.settings/
-bin/
-
-### NetBeans (mínimo necesario) ###
-/nbproject/private/
-/dist/
-/nbbuild/
-/nbdist/
-
-### VS Code ###
-.vscode/
-
-### Java ###
+# === Java ===
 *.class
 *.log
+*.ctxt
+*.jar
+*.war
+*.ear
+*.iml
 
-### JavaFX SDK ###
-javafx-sdk-*/
+# === Build directories ===
+/build/
+/out/
+/target/
 
-### Sistema operativo ###
-# macOS
-.DS_Store
-# Windows
-Thumbs.db
-Desktop.ini
+# === IntelliJ IDEA ===
+.idea/*
+!.idea/codeStyles
+!.idea/inspectionProfiles
 
-### Otros ###
-# Archivos temporales
-*.tmp
-*.swp
-*.bak
+# Archivos de configuración que pueden variar entre máquinas
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/shelf
+.idea/gradle.xml
+.idea/libraries
+
+# === Sistema ope
