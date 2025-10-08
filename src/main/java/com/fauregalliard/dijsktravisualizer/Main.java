@@ -1,18 +1,20 @@
-package com.fauregalliard.dijsktravisualizer;//com.fauregalliard.dijsktravisualizer.Main.java
-import com.fauregalliard.dijsktravisualizer.ui.PresentationScene;
-import com.fauregalliard.dijsktravisualizer.ui.SetupScene;
+package com.fauregalliard.dijsktravisualizer;
+import com.fauregalliard.dijsktravisualizer.controller.PresentationScene;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import com.fauregalliard.dijsktravisualizer.model.*;
+
+import javax.print.attribute.PrintRequestAttributeSet;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage stage){
 
-        PresentationScene presentation = new PresentationScene(stage);
-        SetupScene setupScene = new SetupScene(stage);
-        stage.setScene(presentation.getScene());
-        stage.setTitle("FaureGalliard - Dijkstra Visualizer");
+        PresentationScene presentationScene = new PresentationScene(stage);
+
+        stage.setScene(presentationScene.getScene());
+        stage.setTitle("FaureGalliard - Dijsktra Visualizer");
         stage.show();
 
     }
