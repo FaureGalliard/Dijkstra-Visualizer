@@ -1,0 +1,183 @@
+/* Root styles for the entire application */
+.root {
+    -fx-background-color: #20232a;
+        -fx-font-family: 'Courier Prime';
+
+}
+
+/* BorderPane and VBox/HBox containers */
+.border-pane, .vbox, .hbox {    -fx-font-family: 'Courier Prime';
+
+    -fx-background-color: #2d2d35;
+    -fx-padding: 10;
+}
+
+/* Title labels */
+.label.title {
+    -fx-font-family: 'Courier Prime';
+
+    -fx-font-size: 35px;
+    -fx-text-fill: #ff914d;
+    -fx-font-weight: bold;
+}
+.label.title2{
+-fx-font-family: 'Courier Prime';
+
+    -fx-font-size: 18px;
+    -fx-text-fill: #fd9e80;
+    -fx-font-weight: bold;
+}
+
+
+/* General labels */
+.label {
+    -fx-font-family: 'Courier Prime';
+
+    -fx-text-fill: #f5f5f5;
+}
+
+
+/* Secondary labels (e.g., footer) */
+.secondary-label {    -fx-font-family: 'Courier Prime';
+
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 12px;
+}
+
+/* Buttons */
+.button {    -fx-font-family: 'Courier Prime';
+
+    -fx-background-color: #2d2d35;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 11px;
+    -fx-padding: 5 10;
+    -fx-background-radius: 5;
+}
+.button.main{
+-fx-font-family: 'Courier Prime';
+
+    -fx-background-color: #2d2d35;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-padding: 5 10;
+    -fx-background-radius: 5;
+}
+
+.button:hover {    -fx-font-family: 'Courier Prime';
+
+    -fx-background-color: #8f8f8f;
+}
+
+/* Text fields */
+.text-field {    -fx-font-family: 'Courier Prime';
+
+    -fx-background-color: #2d2d35;
+    -fx-text-fill: #f5f5f5;
+    -fx-prompt-text-fill: #8f8f8f;
+
+}
+.info-area {
+    -fx-font-family: 'Courier Prime';
+    -fx-font-size: 13px;
+    -fx-control-inner-background: #2d2d35; /* fondo interior */
+    -fx-text-fill: #f5f5f5;                 /* texto principal */
+    -fx-prompt-text-fill: #8f8f8f;          /* texto de sugerencia */
+    -fx-background-color: #2d2d35;
+    -fx-border-color: #3a3a40;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* Ocultar scrollbar horizontal */
+.info-area .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+}
+
+.info-area .scroll-bar:horizontal .thumb {
+    -fx-opacity: 0;
+}
+
+.info-area .scroll-bar:horizontal .track {
+    -fx-opacity: 0;
+    -fx-pref-height: 0;
+}
+
+.info-area .scroll-bar:horizontal .increment-button,
+.info-area .scroll-bar:horizontal .decrement-button {
+    -fx-opacity: 0;
+    -fx-pref-height: 0;
+}
+
+/* Ocultar scrollbar vertical */
+.info-area .scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-padding: 0;
+}
+
+.info-area .scroll-bar:vertical .thumb {
+    -fx-opacity: 0;
+}
+
+.info-area .scroll-bar:vertical .track {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+}
+
+.info-area .scroll-bar:vertical .increment-button,
+.info-area .scroll-bar:vertical .decrement-button {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+}
+
+.info-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.info-area .content {
+    -fx-background-color: #2d2d35;
+}
+
+.info-area .viewport {
+    -fx-background-color: #2d2d35;
+}
+
+/* Sliders */
+.slider .track {    -fx-font-family: 'Courier Prime';
+
+    -fx-background-color: #f5f5f5;
+}
+
+.slider .thumb {    -fx-font-family: 'Courier Prime';
+
+    -fx-background-color: #8c52ff;
+}
+
+.slider .thumb:hover {    -fx-font-family: 'Courier Prime';
+
+    -fx-background-color: #cb6ce6;
+}
+
+.slider .axis {    -fx-font-family: 'Courier Prime';
+
+    -fx-tick-label-fill: #f5f5f5;
+}
+
+/* Separator */
+.separator .line {    -fx-font-family: 'Courier Prime';
+
+    -fx-border-color: #8f8f8f;
+}
+
+
+
+
+/* Footer */
+.hbox.footer {    -fx-font-family: 'Courier Prime';
+
+    -fx-background-color: #20232a;
+}

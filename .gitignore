@@ -1,0 +1,28 @@
+# === Java ===
+*.class
+*.log
+*.ctxt
+*.jar
+*.war
+*.ear
+*.iml
+
+# === Build directories ===
+/build/
+/out/
+/target/
+
+# === IntelliJ IDEA ===
+.idea/*
+!.idea/codeStyles
+!.idea/inspectionProfiles
+
+# Archivos de configuración que pueden variar entre máquinas
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/shelf
+.idea/gradle.xml
+.idea/libraries
+
+# === Sistema ope
