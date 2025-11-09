@@ -12,7 +12,7 @@ public class NodeView extends Group {
     private double offsetX;
     private double offsetY;
     private final String name;
-    private static final double RADIUS = 10;
+    private static final double RADIUS = 15;
 
     public NodeView(double centerX, double centerY, String name) {
         this.name = name;
@@ -21,6 +21,7 @@ public class NodeView extends Group {
         label = new Text(name);
         label.setMouseTransparent(true); // Prevent interference with drag
         label.setFill(Color.WHITE);
+        label.setStyle("-fx-font-size: 12px");
         label.setX(centerX - label.getLayoutBounds().getWidth() / 2);
         label.setY(centerY + label.getLayoutBounds().getHeight() / 4);
 

@@ -11,7 +11,7 @@ import javafx.scene.layout.Region;
 
 public class Util {
     public static int SLIDER_WIDTH = 480, TEXT_FIELD_WIDTH = 60, BUTTON_WIDTH = 140;
-    public static final double BASE_WIDTH = 800, BASE_HEIGHT = 450;
+    public static final double BASE_WIDTH = 1280, BASE_HEIGHT = 720;
     public static final String[] crewMembers = {
             "Angel Gabriel Crispin Valdivia",
             "Chipoco Cordova Sergio Nicolas",

@@ -44,7 +44,7 @@ public class EdgeView extends Group {
         Text text = new Text(String.valueOf(weight));
         text.setFill(Color.WHITE);
         text.setMouseTransparent(true);
-
+        text.setStyle("-fx-font-size: 15px;");
         DoubleBinding midX = nodoU.getCircle().centerXProperty()
                 .add(nodoV.getCircle().centerXProperty()).divide(2);
         DoubleBinding midY = nodoU.getCircle().centerYProperty()
